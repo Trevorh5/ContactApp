@@ -1,0 +1,16 @@
+include ./mixin
+
+html
+    head
+        title User Manager Project
+    body
+        form(action= '/userList' method= 'post')
+            div
+                +textInput('uid', 'User Id:')
+            div
+                +textInput('name', 'Name:')
+            div
+                +textInput('email', 'Email: ')
+            div
+                +textInput('age', 'Age: ')
+            input(type='submit')

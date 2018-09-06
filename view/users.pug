@@ -1,0 +1,15 @@
+
+table
+    tr
+        th User ID
+        th First Name
+        th Email
+        th Age
+    each user in users
+        tr
+            td= user.uid
+            td= user.name
+            td= user.email
+            td= user.age
+
+button(onClick= '') Edit
