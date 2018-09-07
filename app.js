@@ -30,7 +30,7 @@ app.post('/userList', (req, res) => {
     };
 
     fs.readFile(Users, 'utf8', (err, data) => {
-        if(err) throw err;
+        if (err) throw err;
 
         let allUsers = JSON.parse(data);
 
@@ -40,10 +40,72 @@ app.post('/userList', (req, res) => {
 
         res.render('users', {users: allUsers.users});
     });
-
-
 });
 
+app.get('/userEdit', (req, res) => {
+
+
+    fs.readFile(Users, 'utf8', (err, data) => {
+        if (err) throw err;
+        let allUsers = JSON.parse(data);
+
+        res.render('userEdit', {users: allUsers.users});
+    });
+});
+
+app.post('/userEditSubmit', (req, res) => {
+    //console.log(req);
+    let users = [];
+    let loop = req.body.uid.length;
+    for(let i = 0; i <= loop; i++){
+        let user = {
+            uid: req.body.uid[i],
+            name: req.body.name[i],
+            email: req.body.email[i],
+            age: req.body.age[i]
+        };
+
+        users.push(user);
+
+    }
+    let jsonData = {
+        users: users
+    };
+    console.log(users);
+    fs.writeFile(Users, JSON.stringify(jsonData), (err) => {
+        if (err) throw err;
+        fs.readFile(Users, 'utf8', (err, data) => {
+            if (err) throw err;
+
+            let allUsers = JSON.parse(data);
+
+            res.render('users', {users: allUsers.users});
+        });
+
+    });
+});
+
+app.post('/remove', (req, res) => {
+
+    let index = Number(req.body.delete);
+    console.log('index' + index );
+
+    fs.readFile(Users, 'utf8', (err, data) => {
+        if (err) throw err;
+
+        let allUsers = JSON.parse(data);
+        //console.log(allUsers);
+        for(let i = 0; i <= allUsers.users.length; i++){
+            if(i === index){
+                console.log('i' + i);
+                allUsers.users.splice(index);
+            }
+        }
+        fs.writeFile(Users, JSON.stringify(allUsers));
+        console.log(allUsers.users);
+        res.render('users', {users: allUsers.users});
+    });
+});
 
 
 app.listen(3000, () => {

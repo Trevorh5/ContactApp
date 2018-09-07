@@ -1,0 +1,27 @@
+include ./mixin
+
+form(action= '/userEditSubmit' method= 'post')
+    table
+        tr
+            th User Id
+            th First Name
+            th Email
+            th Age
+        each user, index in users
+            tr
+                td
+                    +editInput("uid", user.uid)
+                td
+                    +editInput("name", user.name)
+                td
+                    +editInput("email", user.email)
+                td
+                    +editInput("age", user.age)
+                td
+                    form(action= '/remove' method='post')
+                        div
+                            input(type='submit', name='delete', value= index)
+
+    input(type='submit')
+
+

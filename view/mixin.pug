@@ -1,3 +1,6 @@
 mixin textInput(id, val)
-    label(for=id)= val
-    input(type='text', name= id, id= id)
+    label(for= id)= val
+    input(type='text', name= id)
+
+mixin editInput(val, info)
+    input(type="text", name= val, placeholder= info, value= info)
