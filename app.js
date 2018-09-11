@@ -98,10 +98,10 @@ app.post('/remove', (req, res) => {
         for(let i = 0; i <= allUsers.users.length; i++){
             if(i === index){
                 console.log('i' + i);
-                allUsers.users.splice(index);
+                allUsers.users.splice(index, 1);
             }
         }
-        fs.writeFile(Users, JSON.stringify(allUsers));
+        fs.writeFileSync(Users, JSON.stringify(allUsers));
         console.log(allUsers.users);
         res.render('users', {users: allUsers.users});
     });
