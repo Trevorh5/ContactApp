@@ -3,6 +3,12 @@ const path = require('path');
 const fs = require('fs');
 const bodyParser = require('body-parser');
 
+const MongoClient = require('mongodb').MongoClient;
+const assert = require('assert');
+
+const url = 'mongodb://localhost:27017';
+const dbName = 'contactApp';
+
 let Users = __dirname + '/users.json';
 let app = express();
 app.set('views', path.join(__dirname, 'view'));
@@ -11,6 +17,41 @@ app.set('view engine', 'pug');
 app.use('/', express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+let db;
+MongoClient.connect(url, function(err, client){
+    assert.equal(null, err);
+    console.log('Connected to mongo');
+    db = client.db(dbName);
+
+    //client.close();
+
+});
+
+const insertDocs = function(db, callback, data){
+    const collection = db.collection('users');
+
+    collection.insertOne(
+        data
+    , function(err, result){
+        assert.equal(err, null);
+        assert.equal(1, result.result.n);
+        assert.equal(1, result.ops.length);
+        console.log('inserted those 3');
+        callback(result);
+    })
+};
+
+const findDocs = function(db, callback) {
+
+    const collection = db.collection('users');
+
+    collection.find({}).toArray(function(err, docs) {
+        assert.equal(err, null);
+        console.log('Find the following records:');
+        console.log(docs);
+        callback(docs)
+    });
+};
 
 app.get('/', (req, res) => {
     res.render('index');
@@ -29,60 +70,74 @@ app.post('/userList', (req, res) => {
         age: req.body.age
     };
 
-    fs.readFile(Users, 'utf8', (err, data) => {
-        if (err) throw err;
+    insertDocs(db, function(){}, user);
+    findDocs(db, function(data){
+        console.log('data:' + JSON.stringify(data)) ;
 
-        let allUsers = JSON.parse(data);
+        res.render('users', {users: data});
 
-        allUsers.users.push(user);
-
-        fs.writeFile(Users, JSON.stringify(allUsers), () => {});
-
-        res.render('users', {users: allUsers.users});
     });
 });
 
-app.get('/userEdit', (req, res) => {
+app.get('/userEdit/:id', (req, res) => {
 
-
-    fs.readFile(Users, 'utf8', (err, data) => {
-        if (err) throw err;
-        let allUsers = JSON.parse(data);
-
-        res.render('userEdit', {users: allUsers.users});
+    console.log(req.params.id);
+    findDocs(db, function(data){
+        for(let i = 0; i < data.length; i++) {
+            if(data[i].uid === req.params.id){
+                res.render('userEdit', {user: data[i]});
+            }
+        }
     });
 });
 
 app.post('/userEditSubmit', (req, res) => {
     //console.log(req);
-    let users = [];
-    let loop = req.body.uid.length;
-    for(let i = 0; i <= loop; i++){
-        let user = {
-            uid: req.body.uid[i],
-            name: req.body.name[i],
-            email: req.body.email[i],
-            age: req.body.age[i]
-        };
+    db.collection('users').updateOne(
+        { uid: req.body.uid },
+        { $set: {
+            name: req.body.name,
+            email: req.body.email,
+            age: req.body.age
+            }
+        }).then(function(result){
+            console.log('result:' + result);
+            findDocs(db, function(data){
+                console.log('data:' + JSON.stringify(data)) ;
 
-        users.push(user);
+                res.render('users', {users: data});
 
-    }
-    let jsonData = {
-        users: users
-    };
-    console.log(users);
-    fs.writeFile(Users, JSON.stringify(jsonData), (err) => {
-        if (err) throw err;
-        fs.readFile(Users, 'utf8', (err, data) => {
-            if (err) throw err;
-
-            let allUsers = JSON.parse(data);
-
-            res.render('users', {users: allUsers.users});
+            });
         });
 
-    });
+    // let users = [];
+    // let loop = req.body.uid.length;
+    // for(let i = 0; i <= loop; i++){
+    //     let user = {
+    //         uid: req.body.uid[i],
+    //         name: req.body.name[i],
+    //         email: req.body.email[i],
+    //         age: req.body.age[i]
+    //     };
+    //
+    //     users.push(user);
+    //
+    // }
+    // let jsonData = {
+    //     users: users
+    // };
+    // console.log(users);
+    // fs.writeFile(Users, JSON.stringify(jsonData), (err) => {
+    //     if (err) throw err;
+    //     fs.readFile(Users, 'utf8', (err, data) => {
+    //         if (err) throw err;
+    //
+    //         let allUsers = JSON.parse(data);
+    //
+    //         res.render('users', {users: allUsers.users});
+    //     });
+    //
+    // });
 });
 
 app.post('/remove', (req, res) => {
@@ -106,7 +161,6 @@ app.post('/remove', (req, res) => {
         res.render('users', {users: allUsers.users});
     });
 });
-
 
 
 app.listen(3000, () => {
