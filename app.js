@@ -48,13 +48,27 @@ const findDocs = function(db, callback) {
     collection.find({}).toArray(function(err, docs) {
         assert.equal(err, null);
         console.log('Find the following records:');
-        console.log(docs);
+        //console.log(docs);
         callback(docs)
     });
 };
 
 app.get('/', (req, res) => {
-    res.render('index');
+    // res.render('index');
+    let user = {
+        uid: req.body.uid,
+        name: req.body.name,
+        email: req.body.email,
+        age: req.body.age
+    };
+
+    //insertDocs(db, function(){}, user);
+    findDocs(db, function(data){
+        //onsole.log('data:' + JSON.stringify(data)) ;
+
+        res.render('users', {users: data});
+
+    });
 });
 
 app.get('/newUser', (req, res) => {
@@ -72,7 +86,7 @@ app.post('/userList', (req, res) => {
 
     insertDocs(db, function(){}, user);
     findDocs(db, function(data){
-        console.log('data:' + JSON.stringify(data)) ;
+        //console.log('data:' + JSON.stringify(data)) ;
 
         res.render('users', {users: data});
 
@@ -101,66 +115,51 @@ app.post('/userEditSubmit', (req, res) => {
             age: req.body.age
             }
         }).then(function(result){
-            console.log('result:' + result);
+            //console.log('result:' + result);
             findDocs(db, function(data){
-                console.log('data:' + JSON.stringify(data)) ;
+                //console.log('data:' + JSON.stringify(data)) ;
 
                 res.render('users', {users: data});
 
             });
         });
-
-    // let users = [];
-    // let loop = req.body.uid.length;
-    // for(let i = 0; i <= loop; i++){
-    //     let user = {
-    //         uid: req.body.uid[i],
-    //         name: req.body.name[i],
-    //         email: req.body.email[i],
-    //         age: req.body.age[i]
-    //     };
-    //
-    //     users.push(user);
-    //
-    // }
-    // let jsonData = {
-    //     users: users
-    // };
-    // console.log(users);
-    // fs.writeFile(Users, JSON.stringify(jsonData), (err) => {
-    //     if (err) throw err;
-    //     fs.readFile(Users, 'utf8', (err, data) => {
-    //         if (err) throw err;
-    //
-    //         let allUsers = JSON.parse(data);
-    //
-    //         res.render('users', {users: allUsers.users});
-    //     });
-    //
-    // });
 });
 
-app.post('/remove', (req, res) => {
+app.get('/remove/:id', (req, res) => {
 
-    let index = Number(req.body.delete);
-    console.log('index' + index );
+    db.collection('users').deleteOne({
+        uid: req.params.id
+    })
+    .then(function(result){
+        console.log('deleteCount:' + result.deletedCount);
+        console.log('deleted uid: ' + req.params.id);
+        findDocs(db, function(data){
+            //console.log('data:' + JSON.stringify(data)) ;
+            console.log('deleting...');
+            res.render('users', {users: data});
 
-    fs.readFile(Users, 'utf8', (err, data) => {
-        if (err) throw err;
-
-        let allUsers = JSON.parse(data);
-        //console.log(allUsers);
-        for(let i = 0; i <= allUsers.users.length; i++){
-            if(i === index){
-                console.log('i' + i);
-                allUsers.users.splice(index, 1);
-            }
-        }
-        fs.writeFileSync(Users, JSON.stringify(allUsers));
-        console.log(allUsers.users);
-        res.render('users', {users: allUsers.users});
+        });
     });
 });
+    // let index = Number(req.body.delete);
+    // console.log('index' + index );
+    //
+    // fs.readFile(Users, 'utf8', (err, data) => {
+    //     if (err) throw err;
+    //
+    //     let allUsers = JSON.parse(data);
+    //     //console.log(allUsers);
+    //     for(let i = 0; i <= allUsers.users.length; i++){
+    //         if(i === index){
+    //             console.log('i' + i);
+    //             allUsers.users.splice(index, 1);
+    //         }
+    //     }
+    //     fs.writeFileSync(Users, JSON.stringify(allUsers));
+    //     console.log(allUsers.users);
+    //     res.render('users', {users: allUsers.users});
+    // });
+
 
 
 app.listen(3000, () => {
