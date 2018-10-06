@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-//const fs = require('fs');
+const fs = require('fs');
 const bodyParser = require('body-parser');
 
 const MongoClient = require('mongodb').MongoClient;
@@ -17,7 +17,9 @@ app.set('view engine', 'pug');
 app.use('/', express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+
 let db;
+
 MongoClient.connect(url, function(err, client){
     assert.equal(null, err);
     console.log('Connected to mongo');
@@ -45,16 +47,16 @@ const findDocs = function(db, callback) {
 
     const collection = db.collection('users');
 
-    collection.find({}).toArray(function(err, docs) {
+    collection.find().toArray(function(err, docs) {
         assert.equal(err, null);
-        console.log('Find the following records:');
-        //console.log(docs);
         callback(docs)
     });
 };
 
 app.get('/', (req, res) => {
     // res.render('index');
+
+    //TODO move this back to the index page
     let user = {
         uid: req.body.uid,
         name: req.body.name,
@@ -62,12 +64,8 @@ app.get('/', (req, res) => {
         age: req.body.age
     };
 
-    //insertDocs(db, function(){}, user);
     findDocs(db, function(data){
-        //onsole.log('data:' + JSON.stringify(data)) ;
-
         res.render('users', {users: data});
-
     });
 });
 
@@ -141,26 +139,40 @@ app.get('/remove/:id', (req, res) => {
         });
     });
 });
-    // let index = Number(req.body.delete);
-    // console.log('index' + index );
-    //
-    // fs.readFile(Users, 'utf8', (err, data) => {
-    //     if (err) throw err;
-    //
-    //     let allUsers = JSON.parse(data);
-    //     //console.log(allUsers);
-    //     for(let i = 0; i <= allUsers.users.length; i++){
-    //         if(i === index){
-    //             console.log('i' + i);
-    //             allUsers.users.splice(index, 1);
-    //         }
-    //     }
-    //     fs.writeFileSync(Users, JSON.stringify(allUsers));
-    //     console.log(allUsers.users);
-    //     res.render('users', {users: allUsers.users});
-    // });
 
+app.get('/sort', (req, res) => {
 
+    console.log(req.query.sorter);
+
+    if(req.query.sorter === 'asc'){
+        console.log('ascending!');
+        db.collection('users').find().sort({name: 1}).toArray(function (err, data) {
+            console.log(data);
+
+            res.render('users', {users: data});
+        });
+    }
+    else if(req.query.sorter === 'desc'){
+        db.collection('users').find().sort({name: -1}).toArray(function (err, data) {
+            console.log(data);
+
+            res.render('users', {users: data});
+        });
+    }
+
+});
+
+app.get('/genUsers', (req, res) => {
+    fs.readFile(Users, 'utf8', (err, data) => {
+        if (err) throw err;
+        let Data = JSON.parse(data);
+        //console.log(Data.users)
+        db.collection('users').insertMany(Data.users, function(err, res){
+            if (err) throw err;
+            console.log("Number of documents inserted: " + res.insertedCount);
+        });
+    });
+});
 
 app.listen(3000, () => {
     console.log('Listening on port 3000!')

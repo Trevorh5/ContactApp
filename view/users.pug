@@ -1,3 +1,9 @@
+form(action= '/sort', method= 'get', id='sortForm')
+    select(id= 'sorter', name= 'sorter')
+        option(value= 'asc', name= 'asc') A-Z
+        option(value= 'desc', name= 'desc') Z-A
+    input(type= 'submit', value= 'Sort')
+
 table
     tr
         th User ID
@@ -12,3 +18,4 @@ table
             td= user.age
                 a(href= `/userEdit/${user.uid}`) Edit
 
+//a(href='/genUsers') Add Users
