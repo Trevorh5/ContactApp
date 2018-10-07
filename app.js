@@ -93,7 +93,6 @@ app.post('/userList', (req, res) => {
 
 app.get('/userEdit/:id', (req, res) => {
 
-    console.log(req.params.id);
     findDocs(db, function(data){
         for(let i = 0; i < data.length; i++) {
             if(data[i].uid === req.params.id){
@@ -112,23 +111,20 @@ app.post('/userEditSubmit', (req, res) => {
             email: req.body.email,
             age: req.body.age
             }
-        }).then(function(result){
-            //console.log('result:' + result);
-            findDocs(db, function(data){
-                //console.log('data:' + JSON.stringify(data)) ;
+    }).then(function(result){
+        findDocs(db, function(data){
 
-                res.render('users', {users: data});
+            res.render('users', {users: data});
 
-            });
         });
+    });
 });
 
 app.get('/remove/:id', (req, res) => {
 
     db.collection('users').deleteOne({
         uid: req.params.id
-    })
-    .then(function(result){
+    }).then(function(result){
         console.log('deleteCount:' + result.deletedCount);
         console.log('deleted uid: ' + req.params.id);
         findDocs(db, function(data){
@@ -142,35 +138,37 @@ app.get('/remove/:id', (req, res) => {
 
 app.get('/sort', (req, res) => {
 
-    console.log(req.query.sorter);
-
     if(req.query.sorter === 'asc'){
         console.log('ascending!');
         db.collection('users').find().sort({name: 1}).toArray(function (err, data) {
-            console.log(data);
-
             res.render('users', {users: data});
         });
     }
+
     else if(req.query.sorter === 'desc'){
+        console.log('descending!');
         db.collection('users').find().sort({name: -1}).toArray(function (err, data) {
-            console.log(data);
-
             res.render('users', {users: data});
         });
     }
-
 });
 
 app.get('/genUsers', (req, res) => {
     fs.readFile(Users, 'utf8', (err, data) => {
         if (err) throw err;
         let Data = JSON.parse(data);
-        //console.log(Data.users)
         db.collection('users').insertMany(Data.users, function(err, res){
             if (err) throw err;
-            console.log("Number of documents inserted: " + res.insertedCount);
         });
+    });
+});
+
+app.post('/filter', (req, res) => {
+    console.log(req.body.searchbar);
+
+    db.collection('users').find( { $text: { $search: req.body.searchbar } }).toArray(function (err, data) {
+        if (err) throw err;
+        res.render('users', {users: data})
     });
 });
 

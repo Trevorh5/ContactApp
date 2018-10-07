@@ -1,8 +1,12 @@
-form(action= '/sort', method= 'get', id='sortForm')
+form(action= '/sort', method= 'get')
     select(id= 'sorter', name= 'sorter')
         option(value= 'asc', name= 'asc') A-Z
         option(value= 'desc', name= 'desc') Z-A
     input(type= 'submit', value= 'Sort')
+
+form(action= '/filter', method= 'post')
+    input(type= 'text', placeholder= 'Search users...', name= 'searchbar')
+    input(type= 'submit', value= 'Search')
 
 table
     tr
