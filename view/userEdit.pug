@@ -2,11 +2,11 @@ include ./mixin
 
 html
     head
-        link(rel="stylesheet", href="../style/style.css")
+        link(rel="stylesheet", href="style.css")
         title User Edit Page
     body
         form(action= '/userEditSubmit' method= 'post')
-            table
+            table(class= 'table')
                 tr
                     th User Id
                     th First Name

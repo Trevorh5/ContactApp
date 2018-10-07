@@ -14,6 +14,7 @@ let app = express();
 app.set('views', path.join(__dirname, 'view'));
 app.set('view engine', 'pug');
 
+app.use('/remove', express.static('public'));
 app.use('/', express.static('public'));
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
@@ -82,9 +83,15 @@ app.post('/userList', (req, res) => {
 app.get('/userEdit/:id', (req, res) => {
 
     findDocs(db, function(data){
+        console.log('params: ' + req.params.id);
         for(let i = 0; i < data.length; i++) {
-            if(data[i].uid === req.params.id){
+            if(Number(data[i].uid) === Number(req.params.id)){
+                console.log('look at me');
+                console.log(data[i].name);
                 res.render('userEdit', {user: data[i]});
+            }
+            else{
+               console.log('wrong...')
             }
         }
     });
