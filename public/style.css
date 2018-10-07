@@ -1,0 +1,66 @@
+body{
+    width: 100%;
+    height: 100%;
+}
+form{
+    display: inline;
+    margin: 10px;
+}
+#sorter{
+    background-color: lightgrey;
+    padding: 20px;
+    font-size: 12px;
+}
+.submitBtn{
+    font-size: 35px;
+    background-color: blue;
+    height: 30px;
+    width: 80px;
+}
+.button{
+    background-color: lightgray;
+    font-size: 12px;
+    color: black;
+    text-decoration: none;
+    padding: 5px 10px;
+    display: inline;
+    margin: 5px;
+    height: 28px;
+    border: 1px;
+}
+.button:hover{
+    color: white;
+    background-color: lightslategrey;
+}
+.editBtn{
+    font-size: medium;
+    text-decoration: none;
+    display: inline;
+    color: white;
+    background-color: grey;
+    padding: 0;
+}
+.editRow{
+    background-color: grey;
+    padding: 0;
+}
+.table{
+    border-collapse: collapse;
+    width: 75%
+}
+.table td, .table th {
+    border: 1px solid #ddd;
+    padding: 4px;
+}
+.table th{
+    padding-top: 8px;
+    padding-bottom: 8px;
+    text-align: left;
+    background-color: darkblue;
+    color: white;
+    width: 20px;
+}
+.table td{
+    background-color: #f2f2f2;
+}
+

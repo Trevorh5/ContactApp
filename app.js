@@ -15,6 +15,7 @@ app.set('views', path.join(__dirname, 'view'));
 app.set('view engine', 'pug');
 
 app.use('/', express.static('public'));
+app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -54,16 +55,6 @@ const findDocs = function(db, callback) {
 };
 
 app.get('/', (req, res) => {
-    // res.render('index');
-
-    //TODO move this back to the index page
-    let user = {
-        uid: req.body.uid,
-        name: req.body.name,
-        email: req.body.email,
-        age: req.body.age
-    };
-
     findDocs(db, function(data){
         res.render('users', {users: data});
     });
@@ -84,10 +75,7 @@ app.post('/userList', (req, res) => {
 
     insertDocs(db, function(){}, user);
     findDocs(db, function(data){
-        //console.log('data:' + JSON.stringify(data)) ;
-
         res.render('users', {users: data});
-
     });
 });
 
@@ -166,7 +154,7 @@ app.get('/genUsers', (req, res) => {
 app.post('/filter', (req, res) => {
     console.log(req.body.searchbar);
 
-    db.collection('users').find( { $text: { $search: req.body.searchbar } }).toArray(function (err, data) {
+    db.collection('users').find( { $text: { $search: req.body.searchbar, $caseSensitive: false } }).toArray(function (err, data) {
         if (err) throw err;
         res.render('users', {users: data})
     });

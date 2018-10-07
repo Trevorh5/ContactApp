@@ -1,25 +1,35 @@
-form(action= '/sort', method= 'get')
-    select(id= 'sorter', name= 'sorter')
-        option(value= 'asc', name= 'asc') A-Z
-        option(value= 'desc', name= 'desc') Z-A
-    input(type= 'submit', value= 'Sort')
+html
+    head
+        link(rel="stylesheet", href="style.css")
+        title User Listing Page
+    body
+        container
+            header
+                form(action= '/sort', method= 'get')
+                    select(id= 'sorter', name= 'sorter')
+                        option(value= 'asc', name= 'asc') A-Z
+                        option(value= 'desc', name= 'desc') Z-A
+                        input(type= 'submit', value= 'Sort', class= 'button')
 
-form(action= '/filter', method= 'post')
-    input(type= 'text', placeholder= 'Search users...', name= 'searchbar')
-    input(type= 'submit', value= 'Search')
+                form(action= '/filter', method= 'post')
+                    input(type= 'text', placeholder= 'Search users...', name= 'searchbar')
+                    input(type= 'submit', value= 'Search', class= 'button')
 
-table
-    tr
-        th User ID
-        th First Name
-        th Email
-        th Age
-    each user in users
-        tr
-            td= user.uid
-            td= user.name
-            td= user.email
-            td= user.age
-                a(href= `/userEdit/${user.uid}`) Edit
+                a(href= '/newUser', class= 'button') Create user
 
-//a(href='/genUsers') Add Users
+            table(class= 'table')
+                tr
+                    th User ID
+                    th First Name
+                    th Email
+                    th Age
+                each user in users
+                    tr
+                        td= user.uid
+                        td= user.name
+                        td= user.email
+                        td= user.age
+                        td(class= 'editRow')
+                            a(href= `/userEdit/${user.uid}`, class= 'editBtn') Edit
+
+            //a(href='/genUsers') Add Users
