@@ -5,14 +5,14 @@ html
         title Sign-In Page
         link(rel="stylesheet", href="style.css")
     body
-        form(action= '/userList', method= 'post')
-            div
-                +textInput('uid', 'User Id:')
-            div
-                +textInput('name', 'Name:')
-            div
-                +textInput('email', 'Email: ')
-            div
-                +textInput('age', 'Age: ')
-            input(type='submit')
-
+        div(id= 'newUser')
+            form(action= '/userList', method= 'post')
+                div
+                    +textInput('uid', 'User Id:')
+                div
+                    +textInput('name', 'Name:')
+                div
+                    +textInput('email', 'Email: ')
+                div
+                    +textInput('age', 'Age: ')
+                input(type='submit', class= "button")

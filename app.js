@@ -90,9 +90,6 @@ app.get('/userEdit/:id', (req, res) => {
                 console.log(data[i].name);
                 res.render('userEdit', {user: data[i]});
             }
-            else{
-               console.log('wrong...')
-            }
         }
     });
 });

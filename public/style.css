@@ -27,6 +27,7 @@ form{
     margin: 5px;
     height: 28px;
     border: 1px;
+    cursor: pointer;
 }
 .button:hover{
     color: white;
@@ -39,6 +40,11 @@ form{
     color: white;
     background-color: grey;
     padding: 0;
+    border-radius: 4px;
+}
+.editBtn:hover{
+    background-color: lightgray;
+    color: black;
 }
 .editRow{
     background-color: grey;
@@ -46,7 +52,7 @@ form{
 }
 .table{
     border-collapse: collapse;
-    width: 75%
+    width: 75%;
 }
 .table td, .table th {
     border: 1px solid #ddd;
@@ -63,4 +69,16 @@ form{
 .table td{
     background-color: #f2f2f2;
 }
-
+#newUser{
+    background-color: #f2f2f2;
+    border-radius: 5px;
+    width: 250px;
+}
+form div{
+    border: 1px solid #ddd;
+    padding: 4px;
+}
+.sub{
+    border: 1px solid #ddd;
+    padding: 4px;
+}
