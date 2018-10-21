@@ -39,7 +39,8 @@ form{
     display: inline;
     color: white;
     background-color: grey;
-    padding: 0;
+    padding: 0 5px;
+    margin: 0 5px;
     border-radius: 4px;
 }
 .editBtn:hover{

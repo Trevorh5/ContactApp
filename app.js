@@ -81,41 +81,38 @@ app.post('/userList', (req, res) => {
 });
 
 app.get('/userEdit/:id', (req, res) => {
-
-    findDocs(db, function(data){
-        console.log('params: ' + req.params.id);
-        for(let i = 0; i < data.length; i++) {
-            if(Number(data[i].uid) === Number(req.params.id)){
-                console.log('look at me');
-                console.log(data[i].name);
-                res.render('userEdit', {user: data[i]});
-            }
-        }
-    });
+    console.log('id: ' + req.params.id);
+    db.collection('users').findOne({ _id: req.params.id}, (err, data) => {
+        if (err) throw err;
+        console.log(data);
+        console.log(data.uid);
+        res.render('userEdit', {user: data});
+    })
 });
 
-app.post('/userEditSubmit', (req, res) => {
-    //console.log(req);
+app.post('/userEditSubmit/:id', (req, res) => {
+
+    console.log(req.params.id);
     db.collection('users').updateOne(
-        { uid: req.body.uid },
+        { _id : req.params.id },
         { $set: {
-            name: req.body.name,
-            email: req.body.email,
-            age: req.body.age
+                name: req.body.name,
+                email: req.body.email,
+                age: req.body.age
             }
-    }).then(function(result){
-        findDocs(db, function(data){
-
-            res.render('users', {users: data});
-
-        });
+        })
+        .then(function(result){
+            findDocs(db, function(data){
+                console.log(`Just updated ${req.body.name}`);
+                res.render('users', {users: data});
+            });
     });
 });
 
 app.get('/remove/:id', (req, res) => {
 
     db.collection('users').deleteOne({
-        uid: req.params.id
+        _id: req.params.id
     }).then(function(result){
         console.log('deleteCount:' + result.deletedCount);
         console.log('deleted uid: ' + req.params.id);
